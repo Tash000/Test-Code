@@ -3,7 +3,7 @@
 // Define PWM-capable pins for servo control
 const int servoPin1 = 2;  // Pin to move servo to a sweeping motion
 const int servoPin2 = 4;  // Pin to move servo to 0 degrees
-const int servoPin3 = 18; // Pin to move servo to 90 degrees
+const int servoPin3 = 33; // Pin to move servo to 90 degrees
 const int servoPin4 = 19; // Pin to move servo to 180 degrees
 
 Servo myservo1;
