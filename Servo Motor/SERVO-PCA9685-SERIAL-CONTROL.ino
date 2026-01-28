@@ -7,8 +7,8 @@ Adafruit_PWMServoDriver pca9685 = Adafruit_PWMServoDriver(0x40);
 #define SERVOMIN  150 // Minimum pulse length
 #define SERVOMAX  600 // Maximum pulse length
 
-#define JAW_LEFT  1
-#define JAW_RIGHT 2
+#define MOTOR_A  0  // Channel 0
+#define MOTOR_B  1  // Channel 1
 
 String serialInput;
 
@@ -45,19 +45,19 @@ void processCommand() {
   serialInput.trim();
   serialInput.toUpperCase();
   
-  if (serialInput.startsWith("JAW")) {
-    if (serialInput.length() >= 5) {
-      char side = serialInput.charAt(3);
+  if (serialInput.startsWith("MOV")) {
+    if (serialInput.length() >= 5) { // Minimum: MOVA0
+      char channel = serialInput.charAt(3); // Get 'A' or 'B'
       int angle = serialInput.substring(4).toInt();
       
-      if (side == 'L') {
-        moveServo(JAW_LEFT, angle);
+      if (channel == 'A') {
+        moveServo(MOTOR_A, angle);
       } 
-      else if (side == 'R') {
-        moveServo(JAW_RIGHT, angle);
+      else if (channel == 'B') {
+        moveServo(MOTOR_B, angle);
       } 
       else {
-        Serial.println("Error: Use JAWL or JAWR");
+        Serial.println("Error: Use MOVA or MOVB");
       }
     } 
     else {
@@ -65,12 +65,12 @@ void processCommand() {
     }
   }
   else if (serialInput == "OFF" || serialInput == "RELEASE") {
-    releaseServo(JAW_LEFT);
-    releaseServo(JAW_RIGHT);
+    releaseServo(MOTOR_A);
+    releaseServo(MOTOR_B);
     Serial.println("All servos released - no holding torque");
   }
   else {
-    Serial.println("Commands: JAWL<angle>, JAWR<angle>, OFF");
+    Serial.println("Commands: MOVA<angle>, MOVB<angle>, OFF");
   }
   
   Serial.flush();
@@ -87,13 +87,15 @@ void setup() {
   delay(1000);
   
   // Start at safe center position
-  moveServo(JAW_LEFT, 90);
-  moveServo(JAW_RIGHT, 90);
+  moveServo(MOTOR_A, 90);
+  moveServo(MOTOR_B, 90);
   
-  Serial.println("\n=== JAW Servo Controller Ready ===");
+  Serial.println("\n=== Dual Servo Controller Ready ===");
   Serial.println("Commands:");
-  Serial.println("  JAWL90   - Move left to 90°");
-  Serial.println("  JAWR45   - Move right to 45°");
+  Serial.println("  MOVA90   - Move channel 0 to 90°");
+  Serial.println("  MOVB45   - Move channel 1 to 45°");
+  Serial.println("  MOVA0    - Move channel 0 to 0°");
+  Serial.println("  MOVB180  - Move channel 1 to 180°");
   Serial.println("  OFF      - Release servos (no power)");
   Serial.println("Note: Range limited to 10-170° for safety");
   Serial.println("==================================\n");
@@ -104,4 +106,3 @@ void loop() {
     processCommand();
   }
 }
-
